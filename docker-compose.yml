@@ -1,0 +1,96 @@
+version: '3'
+services:
+  client-app:
+    #image: php:7.4-apache
+    build: 
+      context: ./docker/php
+      dockerfile: Dockerfile.php72
+    container_name: client-app
+    restart: always
+    hostname: apache
+    network_mode: "bridge"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8289:80" # normal php port for trafic and functionality
+    depends_on:
+      - client-mysql
+    links:
+      - client-mysql
+    volumes:
+      - ./client:/var/www/html
+
+  server-app:
+    #image: php:7.4-apache
+    build: 
+      context: ./docker/php
+      dockerfile: Dockerfile.php72
+    container_name: server-app
+    restart: always
+    hostname: apache
+    network_mode: "bridge"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8389:80" # normal php port for trafic and functionality
+    depends_on:
+      - server-mysql
+    links:
+      - server-mysql
+    volumes:
+      - ./server:/var/www/html
+
+  client-mysql:
+    image: mysql:5.7
+    container_name: client-mysql
+    restart: always
+    hostname: mysql
+    network_mode: "bridge"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "3308:3306" # mysql connection port
+    environment:
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: laravel
+    volumes:
+      - ./client-mysql:/var/lib/
+
+  server-mysql:
+    image: mysql:5.7
+    container_name: server-mysql
+    restart: always
+    hostname: mysql
+    network_mode: "bridge"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "3309:3306" # mysql connection port
+    environment:
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: laravel
+      MYSQL_DATABASE: laravel
+      MYSQL_ROOT_PASSWORD: laravel
+    volumes:
+      - ./server-mysql:/var/lib/
+
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin:latest
+  #   container_name: phpmyadmin
+  #   restart: always
+  #   network_mode: "bridge"
+  #   links:
+  #     - mysql
+  #   depends_on:
+  #     - mysql
+  #   ports:
+  #     - "8189:80" # phpmyadmin login page
+  #   environment:
+  #     PMA_USER: root
+  #     PMA_PASSWORD: mysql
+  #     PMA_ARBITRARY: 1
+  #     PMA_HOSTS: mysql
+  #     PMA_PORTS: 3306
+  #     UPLOAD_LIMIT: 204800000
