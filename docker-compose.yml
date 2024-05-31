@@ -76,21 +76,21 @@ services:
     volumes:
       - ./server-mysql:/var/lib/
 
-  # phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin:latest
-  #   container_name: phpmyadmin
-  #   restart: always
-  #   network_mode: "bridge"
-  #   links:
-  #     - mysql
-  #   depends_on:
-  #     - mysql
-  #   ports:
-  #     - "8189:80" # phpmyadmin login page
-  #   environment:
-  #     PMA_USER: root
-  #     PMA_PASSWORD: mysql
-  #     PMA_ARBITRARY: 1
-  #     PMA_HOSTS: mysql
-  #     PMA_PORTS: 3306
-  #     UPLOAD_LIMIT: 204800000
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    network_mode: "bridge"
+    links:
+      - server-mysql
+    depends_on:
+      - server-mysql
+    ports:
+      - "8689:80" # phpmyadmin login page
+    environment:
+      PMA_USER: laravel
+      PMA_PASSWORD: laravel
+      PMA_ARBITRARY: 1
+      PMA_HOSTS: server-mysql
+      PMA_PORTS: 3306
+      UPLOAD_LIMIT: 204800000
