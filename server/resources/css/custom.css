@@ -1,0 +1,81 @@
+.br-input select {
+    background-color: var(--background-light);
+    border-color: var(--border-color-alternative);
+    border-radius: var(--surface-rounder-sm);
+    border-style: var(--border-style);
+    border-width: var(--border-width);
+    color: var(--color-light);
+    display: block;
+    font-size: var(--font-size-scale-up-01);
+    font-weight: var(--font-weight-medium);
+    height: var(--input-size);
+    margin-top: var(--spacing-scale-half);
+    padding-bottom: 0px;
+    padding-left: var(--spacing-scale-2x);
+    padding-right: var(--spacing-scale-2x);
+    padding-top: 0px;
+    width: 100%;
+}
+
+.br-input .input-icon + select {
+    padding-left: var(--input-padding-icon);
+}
+
+.br-select{
+    max-width: 100%;
+}
+
+.br-table .table-header{
+    position: sticky !important;
+}
+
+.br-wizard .wizard-panel-content{
+    overflow-x: hidden;
+}
+
+/* Classes personalizadas */
+
+.page-header-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media (max-width: 576px) {
+    .page-header-title {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.page-footer-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4vh;
+}
+
+@media (max-width: 576px) {
+    .page-footer-buttons {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+    }
+}
+
+.br-button.delete {
+    background-color: var(--danger);
+    color: #ffffff;
+}
+.br-button.cancel {
+    background-color: transparent;
+    color: var(--danger);
+}
+.br-button.cancel:hover {
+    background-color: var(--red-vivid-40);
+    color: var(--color-dark);
+
+}
+
+.entre-linhas {
+    line-height: 2;
+}

@@ -1,0 +1,101 @@
+services:
+  oauth-server:
+    # image: hub.dds.ufvjm.edu.br/desenvolvimento/laravel-alpine-php8:latest
+    # image: hub.dds.ufvjm.edu.br/desenvolvimento/apache-debian-php:8.3.4
+    image: hub.dds.ufvjm.edu.br/desenvolvimento/apache-debian-php:8.3.4
+    build: 
+      context: .
+      dockerfile: ../docker/php/Dockerfile-8.3.4
+    restart: always
+    hostname: oauth-server
+    environment:
+      WWWUSER: "${WWWUSER:-1000}"
+      WWWGROUP: "${WWWGROUP:-1000}"
+      APP_DEBUG: 1
+      APP_ENV: local
+    network_mode: "bridge"
+    ports:
+      - "8279:80" # normal php port for trafic and functionality
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - oauth-mysql
+    links:
+      - oauth-mysql
+    volumes:
+      - .:/app
+
+  oauth-node:
+    image: node:22-alpine
+    container_name: oauth-node
+    hostname: oauth-node
+    restart: unless-stopped
+    volumes:
+      - ".:/app"
+    working_dir: /app
+    command: sh -c "npm i && npm run host"
+    environment:
+      UID: "${UID:-1000}"
+      GID: "${GID:-1000}"
+    ports:
+      - "${VITE_PORT:-5173}:${VITE_PORT:-5173}"
+    network_mode: bridge
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - oauth-server
+    tty: true
+
+  oauth-composer:
+    image: composer
+    container_name: oauth-composer
+    hostname: oauth-composer
+    restart: "no"
+    volumes:
+      - ".:/app"
+    working_dir: /app
+    command: bash -c "composer install --ignore-platform-reqs"
+    environment:
+      UID: "${UID:-1000}"
+      GID: "${GID:-1000}"
+    network_mode: bridge
+    depends_on:
+      - oauth-server
+
+  oauth-mysql:
+    image: mysql:8.0
+    restart: always
+    container_name: oauth-mysql
+    hostname: oauth-mysql
+    network_mode: "bridge"
+    ports:
+      - "3310:3306" # mysql connection port
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      MYSQL_USER: oauth
+      MYSQL_PASSWORD: oauth
+      MYSQL_DATABASE: oauth
+      MYSQL_ROOT_PASSWORD: oauth
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - ./mysql-logs:/var/log/mysql
+
+  oauth-phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    network_mode: "bridge"
+    links:
+      - oauth-mysql
+    depends_on:
+      - oauth-mysql
+    ports:
+      - "8489:80" # phpmyadmin login page
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      PMA_USER: oauth
+      PMA_PASSWORD: oauth
+      PMA_HOSTS: oauth-mysql
+      PMA_PORTS: 3306
+      UPLOAD_LIMIT: 204800000

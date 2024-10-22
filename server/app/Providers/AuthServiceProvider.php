@@ -3,36 +3,42 @@
 namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The policy mappings for the application.
+     * The model to policy mappings for the application.
      *
-     * @var array
+     * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+        //
+        'App\Model' => 'App\Policies\ModelPolicy',
     ];
 
     /**
      * Register any authentication / authorization services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
+        //
         $this->registerPolicies();
 
-        Passport::routes();
-
         Passport::tokensCan([
-            'view-posts' => 'View posts',
-            'view-user' => 'View user',
+            'view-posts' => 'Visualizar seus posts publicados',
+            'view-user' => 'Dados pessoais: Nome, CPF e E-mail institucional',
         ]);
 
-        // Passport::tokensExpireIn(now()->addSeconds(10));
+        // Passport::tokensExpireIn(now()->addDays(15));
+        // Passport::refreshTokensExpireIn(now()->addDays(30));
+        // Passport::personalAccessTokensExpireIn(now()->addMonths(6));
+
+
+        Passport::enableImplicitGrant();
+
+        // Enable grant_type password for some applications
+        Passport::enablePasswordGrant();
+
     }
 }

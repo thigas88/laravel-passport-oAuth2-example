@@ -20,8 +20,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', ['as' => 'home', 'uses' => 'App\Http\Controllers\HomeController@index']);
 
-Route::get('/posts', 'PostsController@index');
+Route::get('/posts', ['as' => 'posts', 'uses' => 'App\Http\Controllers\PostsController@index']);
 
-Route::get('/developers', 'DevelopersController@index');
+Route::get('/developers', ['as' => 'developers', 'uses' => 'App\Http\Controllers\DevelopersController@index']);
